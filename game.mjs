@@ -27,21 +27,32 @@ export function neighbors(index) {
   ].filter(valid);
 }
 
-export function generateFleet(random = Math.random) {
-  const occupied = new Set();
-  return FLEET.map(({ name, length }) => {
-    const placements = [];
-    for (const start of positions) {
-      for (const [offset, limit] of [[1, column(start)], [SIZE, row(start)]]) {
-        if (limit + length > SIZE) continue;
-        const cells = Array.from({ length }, (_, part) => start + part * offset);
-        if (cells.every((cell) => !occupied.has(cell))) placements.push(cells);
-      }
+function placementCells(start, length, vertical) {
+  if (!valid(start) || (vertical ? row(start) : column(start)) + length > SIZE) return null;
+  return Array.from({ length }, (_, part) => start + part * (vertical ? SIZE : 1));
+}
+
+function completeFleet(ships, random) {
+  const next = FLEET[ships.length];
+  if (!next) return ships;
+  const occupied = new Set(ships.flatMap(({ cells }) => cells));
+  const placements = [];
+  for (const start of positions) {
+    for (const vertical of [false, true]) {
+      const cells = placementCells(start, next.length, vertical);
+      if (cells?.every((cell) => !occupied.has(cell))) placements.push(cells);
     }
-    const cells = pick(placements, random);
-    cells.forEach((cell) => occupied.add(cell));
-    return { name, cells };
-  });
+  }
+  while (placements.length) {
+    const [cells] = placements.splice(Math.floor(random() * placements.length), 1);
+    const fleet = completeFleet([...ships, { name: next.name, cells }], random);
+    if (fleet) return fleet;
+  }
+  return null;
+}
+
+export function generateFleet(random = Math.random) {
+  return completeFleet([], random);
 }
 
 export function chooseAiShot(shots, random = Math.random) {
@@ -100,10 +111,11 @@ function boardView({ ships, shots }, reveal) {
   }
   return {
     cells,
-    fleet: ships.map((ship) => ({
-      name: ship.name,
-      length: ship.cells.length,
-      sunk: isSunk(shots, ship),
+    fleet: FLEET.map(({ name, length }, index) => ({
+      name,
+      length,
+      placed: Boolean(ships[index]),
+      sunk: Boolean(ships[index]) && isSunk(shots, ships[index]),
     })),
   };
 }
@@ -124,13 +136,46 @@ export class Battle {
     return this.#phase;
   }
 
+  get nextShip() {
+    return this.#phase === 'setup' ? FLEET[this.#player.ships.length] ?? null : null;
+  }
+
+  beginPlacement() {
+    if (this.#phase !== 'setup') return;
+    this.#player.ships = [];
+  }
+
+  placementAt(index, vertical = false) {
+    if (!this.nextShip) return null;
+    const cells = placementCells(index, this.nextShip.length, vertical);
+    if (!cells) return null;
+    return this.#player.ships.some((ship) => ship.cells.some((cell) => cells.includes(cell))) ? null : cells;
+  }
+
+  placeShip(index, vertical = false) {
+    const cells = this.placementAt(index, vertical);
+    if (!cells) return false;
+    this.#player.ships.push({ name: this.nextShip.name, cells });
+    return true;
+  }
+
+  placeRemaining() {
+    if (!this.nextShip) return false;
+    const fleet = completeFleet(this.#player.ships, this.#random);
+    if (!fleet) return false;
+    this.#player.ships = fleet;
+    return true;
+  }
+
   shuffle() {
     if (this.#phase !== 'setup') return;
     this.#player = makeBoard(this.#random);
   }
 
   start() {
-    if (this.#phase === 'setup') this.#phase = 'player';
+    if (this.#phase !== 'setup' || this.nextShip) return false;
+    this.#phase = 'player';
+    return true;
   }
 
   fire(index) {

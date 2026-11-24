@@ -89,6 +89,7 @@ h1 {
 .access-error:not(:empty) { margin-top: 6px; }
 .command {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 14px 20px;
@@ -100,6 +101,7 @@ h1 {
 .phase[data-phase="player"], .phase[data-phase="won"] { color: #155b52; }
 .status { margin: 4px 0 0; font-size: 0.91rem; }
 .controls { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+.command .controls { max-width: 100%; }
 .controls button {
   padding: 8px 13px;
   min-height: 40px;
@@ -115,6 +117,7 @@ h1 {
 .controls button:hover { background: #e8dbbc; }
 .controls .primary { color: #fff8e9; background: #ad3528; border-color: #7d241c; box-shadow: 0 2px 0 #7d241c; }
 .controls .primary:hover { background: #8a281e; }
+.command button:disabled { opacity: 0.55; cursor: not-allowed; }
 .primary span { margin-left: 4px; }
 .theater {
   display: grid;
@@ -133,6 +136,9 @@ h1 {
 }
 .enemy { border-radius: 23px 23px 8px 8px; }
 .own { border-radius: 8px 8px 26px 26px; background: linear-gradient(154deg, #123459, #1c568e 62%, #123052); }
+.theater.placing .enemy, .theater.placing .case-hinge { display: none; }
+.theater.placing .own { border-radius: 23px 23px 26px 26px; }
+.fleet .ship-pending { opacity: 0.58; }
 .playfield { min-width: 0; }
 .sector-head {
   display: flex;
@@ -271,6 +277,8 @@ h1 {
 }
 .target .tile[aria-disabled="false"] { cursor: crosshair; }
 .target .tile[aria-disabled="false"]:hover { border-color: #fff9d6; box-shadow: inset 0 0 0 1px #fff9d6; }
+.placing .own .tile[aria-disabled="false"] { cursor: pointer; }
+.tile.placement-preview { border: 2px dashed #fffbd3; }
 .tile:focus-visible { z-index: 3; outline-color: #fffbd3; outline-offset: 0; }
 .tile[data-state="ship"], .swatch.ship {
   background: linear-gradient(#dbe8eb, #8ea8b5);

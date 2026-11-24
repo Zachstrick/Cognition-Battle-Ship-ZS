@@ -4,11 +4,12 @@
 
 ## How to play
 
-1. Shuffle your fleet if you want a different starting formation, then select **Start battle**.
-2. Pick an unmarked square in **Enemy waters**. Red pegs mark hits and white pegs mark misses. You and the computer alternate one shot at a time.
-3. Sink all five opposing ships before the computer sinks yours. Select **Review board** to inspect the final positions or **Play again** to start over.
+1. Select **Place ships** and choose a starting square in **Your waters** for each ship. **Rotate ship** switches between horizontal and vertical. **Place remaining randomly** fills the open spots without moving the ships you placed. For a quick start, keep the starting formation or choose **Shuffle fleet**.
+2. Select **Start battle** when all five ships are placed.
+3. Pick an unmarked square in **Enemy waters**. Red pegs mark hits and white pegs mark misses. You and the computer alternate one shot at a time.
+4. Sink all five opposing ships before the computer sinks yours. Select **Review board** to inspect the final positions or **Play again** to start over.
 
-With a keyboard, use the arrow keys to move around the targeting grid and Enter or Space to fire.
+With a keyboard, use the arrow keys to move around either grid and Enter or Space to place a ship or fire.
 
 ## How the AI works
 
