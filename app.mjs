@@ -170,7 +170,7 @@ shuffle.addEventListener('click', () => {
 start.addEventListener('click', () => {
   battle.start();
   render('Pick a square in enemy waters to fire.');
-  enemyCells[activeCell].focus({ preventScroll: true });
+  enemyCells[activeCell].focus();
 });
 restart.addEventListener('click', () => {
   window.clearTimeout(timer);
