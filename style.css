@@ -574,7 +574,8 @@ h1 {
   .frame { width: calc(100% - 24px); }
   .briefing { grid-template-columns: 1fr; }
   .hero { padding-block: 18px 17px; }
-  .command { flex-wrap: wrap; justify-content: flex-start; padding-inline: 12px; }
+  .command { flex-direction: column; align-items: stretch; padding-inline: 12px; }
+  .command .status { line-height: 1.25; min-block-size: 2.5em; }
   .sector { grid-template-columns: minmax(0, 1fr); padding: 10px 7px; border-width: 5px; }
   .case-wordmark, .instrument-panel, .peg-tray { display: none; }
   .case-rail { width: min(100%, 430px); margin-inline: auto; }
