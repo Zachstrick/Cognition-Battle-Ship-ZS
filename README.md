@@ -1,6 +1,6 @@
 # Battleship — Fleet Command
 
-Play classic Battleship against a tactical computer opponent. No account, install, or API key required.
+[Play Battleship online](https://zachstrick.github.io/Cognition-Battle-Ship-ZS/) against a tactical computer opponent. No account, install, or API key required.
 
 1. Shuffle your fleet if you want a different starting formation, then select **Start battle**.
 2. Pick a square on the enemy board. You and the computer take one shot each per turn.
@@ -11,10 +11,12 @@ With a keyboard, use the arrow keys to move around the targeting grid and Enter 
 ## Run locally
 
 ```sh
-python3 -m http.server 8000
+python3 -m http.server 8000 --bind 127.0.0.1
 ```
 
 Open [localhost:8000](http://localhost:8000). The game uses native JavaScript modules, so serve it over HTTP rather than opening the HTML as a local file. Run the dependency-free game tests with `node --test` (Node.js 24 in CI).
+
+See the [debugging notes](BUGS.md) for the bugs found and fixed during development.
 
 ## How it works
 
