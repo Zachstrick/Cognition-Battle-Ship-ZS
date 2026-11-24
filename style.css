@@ -504,6 +504,14 @@ h1 {
   72% { transform: translateX(-8px); }
 }
 
+@media (min-width: 560px) and (max-height: 420px) {
+  .result { width: min(100% - 24px, 670px); }
+  .result[open] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .result-scene { display: grid; align-items: end; border-bottom: 0; border-right: 4px solid #163e70; }
+  .result-copy { padding: 14px 10px; }
+  .result-copy h2 { font-size: 2rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .result[open] { animation: result-fade 300ms ease-out both; }
   .result .firework, .result .sinking-ship, .result .wake { animation: none; }
