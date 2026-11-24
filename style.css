@@ -86,7 +86,7 @@ h1 span { color: var(--accent); }
 .controls .primary:hover { background: #adf7e2; }
 .primary span { margin-left: 4px; }
 .theater, .briefing { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.sector { padding: 16px clamp(10px, 3vw, 26px); overflow: clip; }
+.sector { padding: 16px clamp(10px, 3vw, 26px); }
 .sector-head {
   display: flex;
   align-items: center;
@@ -102,6 +102,8 @@ h1 span { color: var(--accent); }
   --gap: 3px;
   display: grid;
   gap: var(--gap);
+  overflow: clip;
+  overflow-clip-margin: 6px;
   width: 100%;
   max-width: 382px;
   margin: 0 auto 12px;
@@ -225,6 +227,7 @@ h1 span { color: var(--accent); }
 
 .fleet {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 4px 8px;
   max-width: 382px;
