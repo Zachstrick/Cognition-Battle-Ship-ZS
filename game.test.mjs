@@ -66,6 +66,8 @@ test('setup can shuffle only your fleet; enemy positions remain hidden', () => {
   const { battle, enemy } = match(33);
   const before = battle.view();
   assert.equal(before.phase, 'setup');
+  assert.equal(battle.phase, 'setup');
+  assert.throws(() => { battle.phase = 'won'; }, TypeError);
   assert.equal(battle.fire(0), null);
   assert.equal(battle.counterFire(), null);
   assert.deepEqual(before.enemy.cells, squares());
@@ -83,13 +85,13 @@ test('invalid and duplicate shots do not spend a turn or allow another AI reply'
   const { battle } = match(33);
   battle.start();
   for (const index of [-1, area, 0.5, '1', NaN]) assert.equal(battle.fire(index), null);
-  assert.equal(battle.view().phase, 'player');
+  assert.equal(battle.phase, 'player');
   assert.equal(battle.fire(0).index, 0);
   assert.equal(battle.fire(1), null);
   assert.ok(battle.counterFire());
   assert.equal(battle.counterFire(), null);
   assert.equal(battle.fire(0), null);
-  assert.equal(battle.view().phase, 'player');
+  assert.equal(battle.phase, 'player');
   assert.equal(battle.fire(1).index, 1);
 });
 
@@ -107,7 +109,7 @@ test('sinking marks the full ship and the final hit wins without a return shot',
         assert.ok(cells.every((cell) => view.enemy.cells[cell] === 'sunk'));
       }
       const victory = lastPart && shipIndex === enemy.length - 1;
-      assert.equal(battle.view().phase, victory ? 'won' : 'enemy');
+      assert.equal(battle.phase, victory ? 'won' : 'enemy');
       assert.equal(battle.counterFire() === null, victory);
     }
   }
@@ -120,7 +122,7 @@ test('AI completes a match without repeat shots; defeat reveals the surviving fl
     const occupied = new Set(enemy.flatMap(({ cells }) => cells));
     const counterShots = new Set();
     battle.start();
-    for (let index = 0; index < area && battle.view().phase === 'player'; index += 1) {
+    for (let index = 0; index < area && battle.phase === 'player'; index += 1) {
       if (occupied.has(index)) continue;
       assert.equal(battle.fire(index).outcome, 'miss');
       const shot = battle.counterFire();
@@ -129,6 +131,7 @@ test('AI completes a match without repeat shots; defeat reveals the surviving fl
     }
     const view = battle.view();
     assert.equal(view.phase, 'lost');
+    assert.equal(battle.phase, 'lost');
     assert.ok(view.player.fleet.every(({ sunk }) => sunk));
     assert.ok([...occupied].every((index) => view.enemy.cells[index] === 'ship'));
     assert.equal(battle.counterFire(), null);
