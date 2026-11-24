@@ -3,17 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#09151b">
+    <meta name="theme-color" content="#163e70">
     <meta name="description" content="Play classic Battleship against a tactical computer opponent. No account required.">
     <title>Battleship — Fleet Command</title>
-    <link rel="icon" href="./mark.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="./style.css?v=4">
+    <link rel="icon" href="./mark.svg?v=5" type="image/svg+xml">
+    <link rel="stylesheet" href="./style.css?v=5">
     <script type="module" src="./app.mjs?v=4"></script>
   </head>
   <body>
     <header class="masthead frame">
       <a class="brand" href="./" aria-label="Fleet Command home">
-        <img src="./mark.svg" alt="" width="34" height="34">
+        <img src="./mark.svg?v=5" alt="" width="34" height="34">
         <span>Fleet Command</span>
       </a>
       <span class="mode"><span></span> Single player · vs AI</span>
@@ -22,8 +22,8 @@
     <main class="frame">
       <div class="hero">
         <p class="eyebrow">The classic naval strategy game</p>
-        <h1>Battleship<span>.</span></h1>
-        <p class="lede">Find the enemy fleet before the enemy finds yours.</p>
+        <h1>Battleship</h1>
+        <p class="lede">Pick a coordinate. Drop a peg. Sink the fleet.</p>
       </div>
 
       <section class="command panel" aria-label="Battle controls">
@@ -39,28 +39,53 @@
       </section>
 
       <div class="theater">
-        <section class="sector panel own" aria-labelledby="own-title">
-          <div class="sector-head">
-            <div>
-              <p class="eyebrow">01 / Defense</p>
-              <h2 id="own-title">Your waters</h2>
+        <section class="sector enemy" aria-labelledby="enemy-title">
+          <div class="case-wordmark" aria-hidden="true"><span>Battleship</span></div>
+          <div class="playfield">
+            <div class="sector-head">
+              <h2 id="enemy-title">Enemy waters</h2>
+              <span id="enemy-count" class="counter"></span>
             </div>
-            <span id="own-count" class="counter"></span>
+            <div id="enemy-grid" class="board target" role="grid" aria-label="Targeting grid" aria-describedby="instructions"></div>
           </div>
-          <div id="own-grid" class="board" role="table" aria-label="Your fleet board"></div>
-          <ul id="own-fleet" class="fleet" aria-label="Your ships"></ul>
+          <div class="case-rail">
+            <div class="fleet-card">
+              <p class="case-label">Fire control center</p>
+              <ul id="enemy-fleet" class="fleet" aria-label="Enemy ships"></ul>
+            </div>
+            <div class="instrument-panel" aria-hidden="true">
+              <span class="dial"></span><span class="dial"></span>
+              <span class="lights"></span><span class="lights"></span>
+            </div>
+          </div>
         </section>
 
-        <section class="sector panel enemy" aria-labelledby="enemy-title">
-          <div class="sector-head">
-            <div>
-              <p class="eyebrow">02 / Offense</p>
-              <h2 id="enemy-title">Enemy waters</h2>
+        <div class="case-hinge" aria-hidden="true"><span></span><span></span></div>
+
+        <section class="sector own" aria-labelledby="own-title">
+          <div class="case-rail own-rail">
+            <div class="fleet-card">
+              <p class="case-label">Your fleet</p>
+              <ul id="own-fleet" class="fleet" aria-label="Your ships"></ul>
             </div>
-            <span id="enemy-count" class="counter"></span>
           </div>
-          <div id="enemy-grid" class="board target" role="grid" aria-label="Targeting grid" aria-describedby="instructions"></div>
-          <ul id="enemy-fleet" class="fleet" aria-label="Enemy ships"></ul>
+          <div class="playfield">
+            <div class="sector-head">
+              <h2 id="own-title">Your waters</h2>
+              <span id="own-count" class="counter"></span>
+            </div>
+            <div id="own-grid" class="board" role="table" aria-label="Your fleet board"></div>
+          </div>
+          <div class="peg-tray" aria-hidden="true">
+            <div class="peg-bin hits">
+              <img src="./pegs.svg" alt="">
+              <span>Hits</span>
+            </div>
+            <div class="peg-bin misses">
+              <img src="./pegs.svg" alt="">
+              <span>Misses</span>
+            </div>
+          </div>
         </section>
       </div>
 

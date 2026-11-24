@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 97">
+  <defs>
+    <linearGradient id="shaft" x1="0" x2="0" y1="0" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#fff6d6"/>
+      <stop offset=".38" stop-color="#e4d7ba"/>
+      <stop offset="1" stop-color="#9e9179"/>
+    </linearGradient>
+    <g id="peg">
+      <path d="M-17-3h16l5-3h9a4 4 0 0 1 0 8H4l-5-2h-16a1.5 1.5 0 0 1 0-3Z" fill="url(#shaft)" stroke="#635a4b" stroke-width=".6"/>
+      <path d="M4-5h9" stroke="#fff9e6" stroke-linecap="round"/>
+    </g>
+  </defs>
+  <use href="#peg" transform="translate(28 28) rotate(-26)"/>
+  <use href="#peg" transform="translate(66 24) rotate(36)"/>
+  <use href="#peg" transform="translate(81 43) rotate(80)"/>
+  <use href="#peg" transform="translate(28 52) rotate(13)"/>
+  <use href="#peg" transform="translate(58 52) rotate(-23)"/>
+  <use href="#peg" transform="translate(76 65) rotate(14)"/>
+  <use href="#peg" transform="translate(40 70) rotate(61)"/>
+  <use href="#peg" transform="translate(22 72) rotate(-46)"/>
+  <use href="#peg" transform="translate(59 79) rotate(-12)"/>
+  <use href="#peg" transform="translate(48 36) rotate(108)"/>
+</svg>
