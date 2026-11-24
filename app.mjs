@@ -170,7 +170,7 @@ function fire(index) {
   if (!shot) return;
   lastPlayerShot = shot.index;
   const message = record('You', shot);
-  if (battle.view().phase === 'won') {
+  if (battle.phase === 'won') {
     finishRound('won', message);
     return;
   }
@@ -179,7 +179,7 @@ function fire(index) {
     const shot = battle.counterFire();
     lastAiShot = shot.index;
     const reply = record('AI', shot);
-    if (battle.view().phase === 'lost') {
+    if (battle.phase === 'lost') {
       finishRound('lost', reply);
     } else {
       render(`${reply} Your turn.`);

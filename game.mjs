@@ -86,6 +86,9 @@ function resolveShot(board, index) {
   return { index, outcome: 'sunk', ship: ship.name };
 }
 
+const isSunk = (shots, { cells }) => shots[cells[0]] === 'sunk';
+const fleetSunk = ({ ships, shots }) => ships.every((ship) => isSunk(shots, ship));
+
 function boardView({ ships, shots }, reveal) {
   const cells = [...shots];
   if (reveal) {
@@ -97,10 +100,10 @@ function boardView({ ships, shots }, reveal) {
   }
   return {
     cells,
-    fleet: ships.map(({ name, cells }) => ({
-      name,
-      length: cells.length,
-      sunk: shots[cells[0]] === 'sunk',
+    fleet: ships.map((ship) => ({
+      name: ship.name,
+      length: ship.cells.length,
+      sunk: isSunk(shots, ship),
     })),
   };
 }
@@ -117,6 +120,10 @@ export class Battle {
     this.#enemy = makeBoard(random);
   }
 
+  get phase() {
+    return this.#phase;
+  }
+
   shuffle() {
     if (this.#phase !== 'setup') return;
     this.#player = makeBoard(this.#random);
@@ -130,8 +137,7 @@ export class Battle {
     if (this.#phase !== 'player') return null;
     const result = resolveShot(this.#enemy, index);
     if (!result) return null;
-    this.#phase = this.#enemy.ships.every(({ cells }) => this.#enemy.shots[cells[0]] === 'sunk')
-      ? 'won' : 'enemy';
+    this.#phase = fleetSunk(this.#enemy) ? 'won' : 'enemy';
     return result;
   }
 
@@ -139,8 +145,7 @@ export class Battle {
     if (this.#phase !== 'enemy') return null;
     const index = chooseAiShot(this.#player.shots, this.#random);
     const result = resolveShot(this.#player, index);
-    this.#phase = this.#player.ships.every(({ cells }) => this.#player.shots[cells[0]] === 'sunk')
-      ? 'lost' : 'player';
+    this.#phase = fleetSunk(this.#player) ? 'lost' : 'player';
     return result;
   }
 
