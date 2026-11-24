@@ -8,6 +8,9 @@ const start = byId('start');
 const restart = byId('restart');
 const log = byId('log');
 const result = byId('result');
+const accessCode = byId('access-code');
+const accessError = byId('access-error');
+const accessKey = 'fleet-command:access';
 const labels = {
   water: ['Unfired', ''],
   ship: ['Ship', '■'],
@@ -214,3 +217,30 @@ result.addEventListener('close', () => {
 });
 
 render('Shuffle your fleet or start with this formation.');
+
+function openGame() {
+  byId('access').hidden = true;
+  byId('battle').hidden = false;
+}
+
+byId('access-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  if (accessCode.value.trim().toUpperCase() !== 'COGNITION') {
+    accessError.textContent = 'That code isn’t correct. Try again.';
+    accessCode.setAttribute('aria-invalid', 'true');
+    accessCode.focus();
+    return;
+  }
+  try { sessionStorage.setItem(accessKey, '1'); } catch {}
+  openGame();
+  start.focus();
+});
+
+accessCode.addEventListener('input', () => {
+  accessCode.removeAttribute('aria-invalid');
+  accessError.textContent = '';
+});
+
+try {
+  if (sessionStorage.getItem(accessKey) === '1') openGame();
+} catch {}

@@ -1,6 +1,6 @@
 # Battleship — Fleet Command
 
-[Play Battleship online](https://zachstrick.github.io/Cognition-Battle-Ship-ZS/) against a tactical computer opponent. No account, install, or API key required.
+[Play Battleship online](https://zachstrick.github.io/Cognition-Battle-Ship-ZS/) against a tactical computer opponent. Enter the access code shared with your play link; no account or install is required.
 
 ## How to play
 
@@ -27,3 +27,5 @@ See the [debugging notes](BUGS.md) for the bugs found and fixed during developme
 ## Code and hosting
 
 [`game.mjs`](game.mjs) handles fleet placement, game rules, and AI targeting. [`app.mjs`](app.mjs) handles the boards, input, and effects. GitHub Pages serves the static files from the root of `main`; there is no backend or build step.
+
+The access screen is a demo gate, not secure authentication. It checks the code in the browser and remembers access for the tab session. The code and game assets are public.
