@@ -1,9 +1,12 @@
-import { Battle, FLEET, SIZE, coordinate } from './game.mjs';
+import { Battle, FLEET, SIZE, coordinate } from './game.mjs?v=2';
 
 const byId = (id) => document.getElementById(id);
 const phase = byId('phase');
 const status = byId('status');
 const shuffle = byId('shuffle');
+const place = byId('place');
+const rotate = byId('rotate');
+const randomFill = byId('random-fill');
 const start = byId('start');
 const restart = byId('restart');
 const log = byId('log');
@@ -11,6 +14,7 @@ const result = byId('result');
 const accessCode = byId('access-code');
 const accessError = byId('access-error');
 const accessKey = 'fleet-command:access';
+const setupMessage = 'Place ships, shuffle, or start with this fleet.';
 const labels = {
   water: ['Unfired', ''],
   ship: ['Ship', '■'],
@@ -20,12 +24,13 @@ const labels = {
 };
 
 let battle = new Battle();
-let activeCell = 0;
+let vertical = false;
+let previewIndex = null;
 let timer;
 let lastPlayerShot = null;
 let lastAiShot = null;
 
-function makeBoard(id, interactive) {
+function makeBoard(id, select, preview) {
   const board = byId(id);
   board.addEventListener('animationend', (event) => {
     if (event.pseudoElement === '::before' && (event.animationName === 'explosion' || event.animationName === 'splash-ring')) {
@@ -33,6 +38,7 @@ function makeBoard(id, interactive) {
     }
   });
   const cells = [];
+  const grid = { cells, activeIndex: 0 };
   for (let r = -1; r < SIZE; r += 1) {
     const line = document.createElement('div');
     line.className = 'board-row';
@@ -44,23 +50,44 @@ function makeBoard(id, interactive) {
         box.setAttribute('role', r < 0 ? 'columnheader' : 'rowheader');
         box.textContent = r < 0 ? (c < 0 ? '' : c + 1) : String.fromCharCode(65 + r);
       } else {
-        box.setAttribute('role', interactive ? 'gridcell' : 'cell');
-        const cell = interactive ? document.createElement('button') : box;
+        box.setAttribute('role', 'gridcell');
+        const cell = document.createElement('button');
         cell.className = 'tile';
-        if (interactive) {
-          const index = r * SIZE + c;
-          cell.type = 'button';
-          cell.addEventListener('click', () => fire(index));
-          cell.addEventListener('focus', () => setActive(index));
-          box.append(cell);
-        }
+        cell.type = 'button';
+        const index = r * SIZE + c;
+        cell.addEventListener('click', () => select(index));
+        cell.addEventListener('focus', () => {
+          cells[grid.activeIndex].tabIndex = -1;
+          grid.activeIndex = index;
+          cell.tabIndex = 0;
+          preview?.(index);
+        });
+        if (preview) cell.addEventListener('pointerenter', () => preview(index));
+        box.append(cell);
         cells.push(cell);
       }
       line.append(box);
     }
     board.append(line);
   }
-  return cells;
+  if (preview) board.addEventListener('pointerleave', () => preview(null));
+  board.addEventListener('keydown', (event) => {
+    const index = grid.activeIndex;
+    const r = Math.floor(index / SIZE);
+    const c = index % SIZE;
+    const moves = {
+      ArrowUp: r > 0 ? -SIZE : 0,
+      ArrowDown: r < SIZE - 1 ? SIZE : 0,
+      ArrowLeft: c > 0 ? -1 : 0,
+      ArrowRight: c < SIZE - 1 ? 1 : 0,
+      Home: -c,
+      End: SIZE - c - 1,
+    };
+    if (!Object.hasOwn(moves, event.key)) return;
+    event.preventDefault();
+    cells[index + moves[event.key]].focus();
+  });
+  return grid;
 }
 
 function makeFleet(id) {
@@ -78,71 +105,73 @@ function makeFleet(id) {
   });
 }
 
-const ownCells = makeBoard('own-grid', false);
-const enemyCells = makeBoard('enemy-grid', true);
+const ownGrid = makeBoard('own-grid', placeAt, previewPlacement);
+const enemyGrid = makeBoard('enemy-grid', fire);
 const ownFleet = makeFleet('own-fleet');
 const enemyFleet = makeFleet('enemy-fleet');
 
-function setActive(index) {
-  enemyCells[activeCell].tabIndex = -1;
-  activeCell = index;
-  enemyCells[activeCell].tabIndex = 0;
+function previewPlacement(index = previewIndex) {
+  previewIndex = index;
+  const cells = battle.placementAt(index, vertical) ?? [];
+  ownGrid.cells.forEach((cell, i) => cell.classList.toggle('placement-preview', cells.includes(i)));
 }
 
-byId('enemy-grid').addEventListener('keydown', (event) => {
-  const r = Math.floor(activeCell / SIZE);
-  const c = activeCell % SIZE;
-  const moves = {
-    ArrowUp: r > 0 ? -SIZE : 0,
-    ArrowDown: r < SIZE - 1 ? SIZE : 0,
-    ArrowLeft: c > 0 ? -1 : 0,
-    ArrowRight: c < SIZE - 1 ? 1 : 0,
-    Home: -c,
-    End: SIZE - c - 1,
-  };
-  if (!Object.hasOwn(moves, event.key)) return;
-  event.preventDefault();
-  enemyCells[activeCell + moves[event.key]].focus();
-});
-
-function renderBoard(view, cells, fleet, count, lastShot, canFire = false) {
+function renderBoard(view, grid, fleet, count, lastShot, { focusable = true, canSelect, placing = false }) {
   view.cells.forEach((state, index) => {
-    const cell = cells[index];
+    const cell = grid.cells[index];
     const [label, glyph] = labels[state];
     cell.dataset.state = state;
     cell.classList.toggle('latest', index === lastShot);
     cell.setAttribute('aria-label', `${coordinate(index)}: ${label}`);
     cell.textContent = glyph;
-    if (cell.tagName === 'BUTTON') {
-      cell.setAttribute('aria-disabled', String(!canFire || state !== 'water'));
-      cell.tabIndex = index === activeCell ? 0 : -1;
-    }
+    cell.disabled = !focusable;
+    cell.setAttribute('aria-disabled', String(!canSelect(index, state)));
+    cell.tabIndex = focusable && index === grid.activeIndex ? 0 : -1;
   });
-  const remaining = view.fleet.filter((ship) => !ship.sunk).length;
-  count.textContent = `${remaining}/${FLEET.length} afloat`;
-  view.fleet.forEach(({ name, length, sunk }, index) => {
+  const total = view.fleet.filter((ship) => placing ? ship.placed : !ship.sunk).length;
+  count.textContent = `${total}/${FLEET.length} ${placing ? 'placed' : 'afloat'}`;
+  view.fleet.forEach(({ name, length, placed, sunk }, index) => {
     fleet[index].classList.toggle('ship-sunk', sunk);
-    fleet[index].setAttribute('aria-label', `${name}, ${length} squares, ${sunk ? 'sunk' : 'afloat'}`);
+    fleet[index].classList.toggle('ship-pending', !placed);
+    const condition = placing ? (placed ? 'placed' : 'not placed') : (sunk ? 'sunk' : 'afloat');
+    fleet[index].setAttribute('aria-label', `${name}, ${length} squares, ${condition}`);
   });
 }
 
 function render(message) {
   const view = battle.view();
+  const setup = view.phase === 'setup';
+  const placing = Boolean(battle.nextShip);
   phase.textContent = {
     setup: 'Fleet setup', player: 'Your turn', enemy: 'Enemy turn',
     won: 'Victory', lost: 'Defeat',
   }[view.phase];
   phase.dataset.phase = view.phase;
   status.textContent = message;
-  shuffle.hidden = start.hidden = view.phase !== 'setup';
-  restart.hidden = view.phase === 'setup';
+  shuffle.hidden = start.hidden = !setup;
+  place.hidden = !setup || placing;
+  rotate.hidden = randomFill.hidden = !placing;
+  rotate.setAttribute('aria-pressed', String(vertical));
+  start.disabled = placing;
+  restart.hidden = setup;
+  byId('theater').classList.toggle('placing', placing);
+  if (placing) byId('own-grid').setAttribute('aria-describedby', 'status');
+  else byId('own-grid').removeAttribute('aria-describedby');
   restart.classList.toggle('primary', view.phase === 'won' || view.phase === 'lost');
-  renderBoard(view.player, ownCells, ownFleet, byId('own-count'), lastAiShot);
-  renderBoard(view.enemy, enemyCells, enemyFleet, byId('enemy-count'), lastPlayerShot, view.phase === 'player');
+  renderBoard(view.player, ownGrid, ownFleet, byId('own-count'), lastAiShot, {
+    placing,
+    focusable: placing,
+    canSelect: (index) => Boolean(battle.placementAt(index, vertical)),
+  });
+  renderBoard(view.enemy, enemyGrid, enemyFleet, byId('enemy-count'), lastPlayerShot, {
+    canSelect: (_, state) => view.phase === 'player' && state === 'water',
+  });
+  if (!placing) previewIndex = null;
+  previewPlacement();
 }
 
 function record(actor, shot) {
-  const target = (actor === 'You' ? enemyCells : ownCells)[shot.index];
+  const target = (actor === 'You' ? enemyGrid : ownGrid).cells[shot.index];
   target.dataset.effect = shot.outcome === 'miss' ? 'splash' : 'blast';
   const square = coordinate(shot.index);
   const desc = shot.outcome === 'sunk' ? `sunk the ${shot.ship}` : shot.outcome;
@@ -194,20 +223,58 @@ shuffle.addEventListener('click', () => {
   battle.shuffle();
   render('Fleet shuffled. Start a battle when ready.');
 });
+
+function placementMessage() {
+  const { name, length } = battle.nextShip;
+  return `Place the ${name} (${length} squares) ${vertical ? 'vertically' : 'horizontally'} in Your waters.`;
+}
+
+function finishPlacement() {
+  render('Fleet placed. Start battle when ready.');
+  start.focus();
+}
+
+function placeAt(index) {
+  if (!battle.nextShip) return;
+  if (!battle.placeShip(index, vertical)) {
+    status.textContent = 'That ship won’t fit. Try another square or rotate.';
+    return;
+  }
+  if (battle.nextShip) render(placementMessage());
+  else finishPlacement();
+}
+
+place.addEventListener('click', () => {
+  battle.beginPlacement();
+  vertical = false;
+  ownGrid.activeIndex = 0;
+  render(placementMessage());
+  ownGrid.cells[0].focus();
+});
+rotate.addEventListener('click', () => {
+  if (!battle.nextShip) return;
+  vertical = !vertical;
+  render(placementMessage());
+});
+randomFill.addEventListener('click', () => {
+  if (battle.placeRemaining()) finishPlacement();
+  else status.textContent = 'No fleet fits here. Try Shuffle fleet to start over.';
+});
 start.addEventListener('click', () => {
-  battle.start();
+  if (!battle.start()) return;
   render('Pick a square in enemy waters to fire.');
-  enemyCells[activeCell].focus();
+  enemyGrid.cells[enemyGrid.activeIndex].focus();
 });
 function resetBattle() {
   window.clearTimeout(timer);
   battle = new Battle();
-  activeCell = 0;
+  ownGrid.activeIndex = enemyGrid.activeIndex = 0;
+  vertical = false;
   lastPlayerShot = lastAiShot = null;
   document.querySelectorAll('.tile[data-effect]').forEach((cell) => { delete cell.dataset.effect; });
   log.replaceChildren();
   byId('empty-log').hidden = false;
-  render('Shuffle your fleet or start with this formation.');
+  render(setupMessage);
   start.focus();
 }
 
@@ -216,7 +283,7 @@ result.addEventListener('close', () => {
   if (result.returnValue === 'replay') resetBattle();
 });
 
-render('Shuffle your fleet or start with this formation.');
+render(setupMessage);
 
 function openGame() {
   byId('access').hidden = true;

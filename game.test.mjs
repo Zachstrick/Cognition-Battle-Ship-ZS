@@ -81,6 +81,53 @@ test('setup can shuffle only your fleet; enemy positions remain hidden', () => {
   assert.equal(battle.fire(enemy[0].cells[0]).outcome, 'hit');
 });
 
+test('manual placement checks boundaries and overlap, and random fill keeps placed ships', () => {
+  const { battle, enemy } = match(33);
+  battle.beginPlacement();
+  assert.equal(battle.nextShip.name, 'Carrier');
+  assert.deepEqual(battle.view().player.cells, squares());
+  assert.equal(battle.start(), false);
+  assert.equal(battle.placeShip(6), false);
+  assert.equal(battle.placeShip(60, true), false);
+  assert.equal(battle.placeShip(-1), false);
+  assert.deepEqual(battle.placementAt(0), [0, 1, 2, 3, 4]);
+  assert.equal(battle.placeShip(0), true);
+  assert.equal(battle.nextShip.name, 'Battleship');
+  assert.equal(battle.placeShip(2, true), false);
+  assert.deepEqual(battle.placementAt(6, true), [6, 16, 26, 36]);
+  assert.equal(battle.placeShip(6, true), true);
+  assert.deepEqual(battle.view().player.fleet.map(({ placed }) => placed), [true, true, false, false, false]);
+  assert.equal(battle.start(), false);
+  assert.equal(battle.placeRemaining(), true);
+  const { player } = battle.view();
+  assert.equal(player.cells.filter((cell) => cell === 'ship').length, 17);
+  assert.ok([0, 1, 2, 3, 4, 6, 16, 26, 36].every((cell) => player.cells[cell] === 'ship'));
+  assert.ok(player.fleet.every(({ placed }) => placed));
+  assert.deepEqual(battle.view().enemy.cells, squares());
+  assert.equal(battle.start(), true);
+  battle.beginPlacement();
+  assert.equal(battle.placeShip(55), false);
+  assert.equal(battle.placeRemaining(), false);
+  assert.deepEqual(battle.view().player, player);
+  assert.equal(battle.fire(enemy[0].cells[0]).outcome, 'hit');
+});
+
+test('placing all five ships or shuffling an unfinished fleet makes it battle-ready', () => {
+  const { battle } = match(12);
+  battle.beginPlacement();
+  for (const index of [0, 10, 20, 30, 40]) assert.equal(battle.placeShip(index), true);
+  assert.equal(battle.nextShip, null);
+  assert.equal(battle.placeShip(50), false);
+  assert.equal(battle.start(), true);
+
+  const other = new Battle(seeded(12));
+  other.beginPlacement();
+  assert.equal(other.placeShip(0), true);
+  other.shuffle();
+  assert.equal(other.nextShip, null);
+  assert.equal(other.start(), true);
+});
+
 test('invalid and duplicate shots do not spend a turn or allow another AI reply', () => {
   const { battle } = match(33);
   battle.start();
