@@ -7,8 +7,8 @@
     <meta name="description" content="Play classic Battleship against a tactical computer opponent. No account required.">
     <title>Battleship — Fleet Command</title>
     <link rel="icon" href="./mark.svg?v=5" type="image/svg+xml">
-    <link rel="stylesheet" href="./style.css?v=6">
-    <script type="module" src="./app.mjs?v=4"></script>
+    <link rel="stylesheet" href="./style.css?v=7">
+    <script type="module" src="./app.mjs?v=5"></script>
   </head>
   <body>
     <header class="masthead frame">
@@ -108,6 +108,48 @@
       </div>
     </main>
     <footer class="frame footer">Fleet Command <span>•</span> Battleship</footer>
+    <dialog id="result" class="result" aria-labelledby="result-title" aria-describedby="result-detail">
+      <p class="eyebrow result-kicker" tabindex="-1" autofocus>Fleet Command · Battle report</p>
+      <div class="result-scene" aria-hidden="true">
+        <svg class="victory-scene" viewBox="0 0 400 158">
+          <defs>
+            <g id="firework" fill="currentColor">
+              <path d="M0-16v-16M0 16v16M-16 0h-16M16 0h16M-12-12l-12-12m36 12 12-12m-36 36-12 12m36-12 12 12"
+                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              <circle r="4"/><circle cx="-38" cy="-16" r="2.5"/><circle cx="12" cy="-39" r="2.5"/>
+              <circle cx="38" cy="16" r="2.5"/><circle cx="-14" cy="38" r="2.5"/>
+            </g>
+          </defs>
+          <g transform="translate(96 62)"><use class="firework gold" href="#firework"/></g>
+          <g transform="translate(205 44) scale(1.12)"><use class="firework coral" href="#firework"/></g>
+          <g transform="translate(313 57) scale(.92)"><use class="firework sky" href="#firework"/></g>
+          <path fill="#101e34" d="M80 110h56l8-10h35l8-15h14V67h5v18h13l7 15h41l10 10h46l-29 22H105Z"/>
+          <path fill="#315c7b" d="M0 129Q40 123 81 129T161 129T241 129T321 129T401 129V158H0Z"/>
+          <path fill="#133550" d="M0 144Q50 137 100 144T200 144T300 144T400 144V158H0Z"/>
+        </svg>
+        <svg class="defeat-scene" viewBox="0 0 400 158">
+          <circle cx="306" cy="49" r="21" fill="#f1b4a0" opacity=".55"/>
+          <g class="sinking-ship">
+            <path fill="#12283c" d="M54 93h72l9-11h29l11-18h17V44h6v20h16l8 18h40l10 11h51l-29 24H79Z"/>
+            <path fill="#456a7c" d="M59 97h252l-10 8H70Z"/>
+            <path fill="none" stroke="#f5ac80" stroke-width="3" stroke-linecap="round" d="M151 91h6m15 0h6m15 0h6m15 0h6"/>
+          </g>
+          <g class="wake">
+            <path fill="#225878" d="M-24 110Q1 104 26 110T76 110T126 110T176 110T226 110T276 110T326 110T376 110T426 110V158H-24Z"/>
+            <path fill="#153955" d="M-24 131Q1 125 26 131T76 131T126 131T176 131T226 131T276 131T326 131T376 131T426 131V158H-24Z"/>
+            <path fill="none" stroke="#85c8d6" stroke-width="2" opacity=".7" d="M-12 117h32m48 0h18m32 0h29m43 0h35m49 0h27m44 0h35m-320 25h45m44 0h19m40 0h46m43 0h38"/>
+          </g>
+        </svg>
+      </div>
+      <div class="result-copy">
+        <h2 id="result-title"></h2>
+        <p id="result-detail"></p>
+        <form method="dialog" class="controls result-actions">
+          <button type="submit" value="review">Review board</button>
+          <button type="submit" class="primary" value="replay">Play again</button>
+        </form>
+      </div>
+    </dialog>
     <noscript><p class="frame">Enable JavaScript to play Battleship.</p></noscript>
   </body>
 </html>
