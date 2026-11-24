@@ -160,12 +160,12 @@ h1 span { color: var(--accent); }
 .tile.latest:is([data-state="hit"], [data-state="sunk"])::after {
   inset: 8%;
   background:
-    radial-gradient(circle at 50% 8%, #ffe49a 0 5%, transparent 7%),
-    radial-gradient(circle at 86% 24%, #ff925f 0 5%, transparent 7%),
-    radial-gradient(circle at 91% 65%, #fff3b7 0 4%, transparent 6%),
-    radial-gradient(circle at 66% 88%, #ff925f 0 5%, transparent 7%),
-    radial-gradient(circle at 21% 82%, #ffe49a 0 5%, transparent 7%),
-    radial-gradient(circle at 9% 36%, #ff925f 0 5%, transparent 7%);
+    radial-gradient(circle at 50% 8%, var(--shot-particle, #ffe49a) 0 5%, transparent 7%),
+    radial-gradient(circle at 86% 24%, var(--shot-particle, #ff925f) 0 5%, transparent 7%),
+    radial-gradient(circle at 91% 65%, var(--shot-particle, #fff3b7) 0 4%, transparent 6%),
+    radial-gradient(circle at 66% 88%, var(--shot-particle, #ff925f) 0 5%, transparent 7%),
+    radial-gradient(circle at 21% 82%, var(--shot-particle, #ffe49a) 0 5%, transparent 7%),
+    radial-gradient(circle at 9% 36%, var(--shot-particle, #ff925f) 0 5%, transparent 7%);
   animation: shot-particles 750ms ease-out;
 }
 .tile.latest[data-state="miss"]::before {
@@ -178,11 +178,11 @@ h1 span { color: var(--accent); }
 .tile.latest[data-state="miss"]::after {
   inset: 15%;
   background:
-    radial-gradient(circle at 27% 15%, #d1f3ff 0 5%, transparent 7%),
-    radial-gradient(circle at 71% 9%, #9cdeff 0 5%, transparent 7%),
-    radial-gradient(circle at 88% 43%, #d1f3ff 0 4%, transparent 6%),
-    radial-gradient(circle at 50% 82%, #9cdeff 0 4%, transparent 7%),
-    radial-gradient(circle at 13% 61%, #9cdeff 0 5%, transparent 7%);
+    radial-gradient(circle at 27% 15%, var(--shot-particle, #d1f3ff) 0 5%, transparent 7%),
+    radial-gradient(circle at 71% 9%, var(--shot-particle, #9cdeff) 0 5%, transparent 7%),
+    radial-gradient(circle at 88% 43%, var(--shot-particle, #d1f3ff) 0 4%, transparent 6%),
+    radial-gradient(circle at 50% 82%, var(--shot-particle, #9cdeff) 0 4%, transparent 7%),
+    radial-gradient(circle at 13% 61%, var(--shot-particle, #9cdeff) 0 5%, transparent 7%);
   animation: shot-particles 750ms ease-out;
 }
 
@@ -192,18 +192,13 @@ h1 span { color: var(--accent); }
     background: radial-gradient(circle, transparent 0 22%, CanvasText 27% 52%, transparent 68%);
   }
   .tile.latest[data-state="miss"]::before {
+    forced-color-adjust: none;
     border-color: CanvasText;
     box-shadow: none;
   }
   .tile.latest:is([data-state="hit"], [data-state="sunk"], [data-state="miss"])::after {
-    display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tile.latest:is([data-state="hit"], [data-state="sunk"], [data-state="miss"])::before,
-  .tile.latest:is([data-state="hit"], [data-state="sunk"], [data-state="miss"])::after {
-    animation-name: shot-fade;
+    forced-color-adjust: none;
+    --shot-particle: CanvasText;
   }
 }
 
@@ -221,11 +216,6 @@ h1 span { color: var(--accent); }
   40% { opacity: 0.9; }
   100% { opacity: 0; transform: scale(1.2); }
 }
-@keyframes shot-fade {
-  0%, 25% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
 .fleet {
   display: flex;
   justify-content: space-between;
