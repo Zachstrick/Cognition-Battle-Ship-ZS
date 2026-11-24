@@ -437,6 +437,32 @@ h1 {
 .footer { padding-block: 18px; font: 0.66rem var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
 .footer span { color: var(--accent); padding-inline: 4px; }
 
+@media (width > 600px) {
+  .frame { width: min(100% - 32px, clamp(35rem, 84svh - 12.5rem, 44rem)); }
+  .masthead { padding-block: 4px; }
+  .hero {
+    display: grid;
+    grid-template-columns: auto minmax(0, max-content);
+    justify-content: center;
+    align-items: end;
+    column-gap: 16px;
+    padding-block: 7px;
+    text-align: left;
+  }
+  .hero .eyebrow { grid-area: 1 / 2; }
+  .hero h1 { grid-area: 1 / 1 / span 2; align-self: center; margin: 0; font-size: 2.65rem; }
+  .lede { grid-area: 2 / 2; align-self: start; margin: 2px 0 0; font-size: 0.85rem; }
+  .command { padding-block: 6px; margin-bottom: 8px; }
+  .sector { gap: 13px; padding: 6px 13px; border-width: 5px; }
+  .sector-head { margin-bottom: 5px; }
+  .case-hinge { height: 12px; }
+  .board { padding: 5px; }
+  .fleet li { gap: 2px; padding-block: 2px; }
+  .pips { padding-top: 11px; }
+  .instrument-panel { padding-block: 6px; }
+  .dial { width: min(100%, 25px); }
+}
+
 @media (max-width: 600px) {
   .frame { width: calc(100% - 24px); }
   .briefing { grid-template-columns: 1fr; }
