@@ -437,6 +437,80 @@ h1 {
 .footer { padding-block: 18px; font: 0.66rem var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
 .footer span { color: var(--accent); padding-inline: 4px; }
 
+.result {
+  width: min(100% - 24px, 440px);
+  max-height: calc(100% - 24px);
+  padding: 0;
+  border: 5px solid #163e70;
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 24px 70px #030f23a6;
+  overscroll-behavior: contain;
+}
+.result[open] { animation: result-arrive 340ms ease-out both; }
+.result::backdrop { background: #061428bd; }
+.result-scene {
+  overflow: hidden;
+  border-bottom: 4px solid #163e70;
+  background: radial-gradient(ellipse at 50% 90%, #315c7b, #101a3b 78%);
+}
+.result[data-outcome="lost"] .result-scene {
+  background: linear-gradient(#152342, #62445a 72%, #89565e);
+}
+.result-scene svg { display: none; width: 100%; height: auto; }
+.result[data-outcome="won"] .victory-scene,
+.result[data-outcome="lost"] .defeat-scene { display: block; }
+.result-copy { padding: 20px clamp(12px, 5vw, 28px) 24px; text-align: center; }
+.result-copy h2 {
+  margin-top: 6px;
+  font-size: clamp(2rem, 8vw, 3.1rem);
+  font-weight: 950;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+.result[data-outcome="won"] h2 { color: #135a50; }
+.result[data-outcome="lost"] h2 { color: var(--accent); }
+#result-detail { margin: 8px 0 18px; color: var(--muted); }
+.result-actions { justify-content: center; gap: 12px; }
+.firework { animation: firework-burst 1.4s var(--launch) ease-out both; }
+.firework.gold { color: #ffdc87; --launch: 220ms; }
+.firework.coral { color: #ff9c88; --launch: 570ms; }
+.firework.sky { color: #a9eaff; --launch: 390ms; }
+.sinking-ship {
+  transform-box: fill-box;
+  transform-origin: 63% 82%;
+  animation: ship-sink 1.9s 200ms ease-in both;
+}
+.wake { animation: ocean-wake 2.1s ease-in-out both; }
+
+@keyframes result-arrive {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes firework-burst {
+  0% { opacity: 0; transform: scale(0.12); }
+  23% { opacity: 1; transform: scale(0.88); }
+  100% { opacity: 0.35; transform: scale(1.18); }
+}
+@keyframes ship-sink {
+  0%, 14% { transform: translateY(0) rotate(0); }
+  48% { transform: translateY(12px) rotate(12deg); }
+  100% { transform: translateY(82px) rotate(28deg); }
+}
+@keyframes ocean-wake {
+  0%, 100% { transform: translateX(0); }
+  45% { transform: translateX(13px); }
+  72% { transform: translateX(-8px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result[open] { animation: result-fade 300ms ease-out both; }
+  .result .firework, .result .sinking-ship, .result .wake { animation: none; }
+  .result .sinking-ship { transform: translateY(22px) rotate(12deg); }
+}
+@keyframes result-fade { from { opacity: 0; } to { opacity: 1; } }
+
 @media (width > 600px) {
   .frame { width: min(100% - 32px, clamp(35rem, 84svh - 12.5rem, 44rem)); }
   .masthead { padding-block: 4px; }

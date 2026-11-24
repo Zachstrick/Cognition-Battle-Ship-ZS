@@ -7,6 +7,7 @@ const shuffle = byId('shuffle');
 const start = byId('start');
 const restart = byId('restart');
 const log = byId('log');
+const result = byId('result');
 const labels = {
   water: ['Unfired', ''],
   ship: ['Ship', '■'],
@@ -152,13 +153,25 @@ function record(actor, shot) {
   return `${actor === 'You' ? 'Your shot' : 'The AI'} at ${square}: ${desc}.`;
 }
 
+function finishRound(outcome, message) {
+  const won = outcome === 'won';
+  render(`${message} ${won ? 'You win!' : 'The AI wins.'}`);
+  result.dataset.outcome = outcome;
+  byId('result-title').textContent = won ? 'Victory!' : 'Defeat';
+  byId('result-detail').textContent = won
+    ? 'Enemy fleet sunk. You command these waters.'
+    : 'Your fleet has gone under. Regroup and try again.';
+  result.returnValue = '';
+  timer = window.setTimeout(() => result.showModal(), 1000);
+}
+
 function fire(index) {
   const shot = battle.fire(index);
   if (!shot) return;
   lastPlayerShot = shot.index;
   const message = record('You', shot);
   if (battle.view().phase === 'won') {
-    render(`${message} You win!`);
+    finishRound('won', message);
     return;
   }
   render(`${message} The AI is aiming.`);
@@ -166,7 +179,11 @@ function fire(index) {
     const shot = battle.counterFire();
     lastAiShot = shot.index;
     const reply = record('AI', shot);
-    render(`${reply} ${battle.view().phase === 'lost' ? 'The AI wins.' : 'Your turn.'}`);
+    if (battle.view().phase === 'lost') {
+      finishRound('lost', reply);
+    } else {
+      render(`${reply} Your turn.`);
+    }
   }, 400);
 }
 
@@ -179,7 +196,7 @@ start.addEventListener('click', () => {
   render('Pick a square in enemy waters to fire.');
   enemyCells[activeCell].focus();
 });
-restart.addEventListener('click', () => {
+function resetBattle() {
   window.clearTimeout(timer);
   battle = new Battle();
   activeCell = 0;
@@ -189,6 +206,11 @@ restart.addEventListener('click', () => {
   byId('empty-log').hidden = false;
   render('Shuffle your fleet or start with this formation.');
   start.focus();
+}
+
+restart.addEventListener('click', resetBattle);
+result.addEventListener('close', () => {
+  if (result.returnValue === 'replay') resetBattle();
 });
 
 render('Shuffle your fleet or start with this formation.');
