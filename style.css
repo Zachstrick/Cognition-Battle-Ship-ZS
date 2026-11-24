@@ -86,7 +86,7 @@ h1 span { color: var(--accent); }
 .controls .primary:hover { background: #adf7e2; }
 .primary span { margin-left: 4px; }
 .theater, .briefing { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.sector { padding: 16px clamp(10px, 3vw, 26px); }
+.sector { padding: 16px clamp(10px, 3vw, 26px); overflow: clip; }
 .sector-head {
   display: flex;
   align-items: center;
@@ -116,7 +116,6 @@ h1 span { color: var(--accent); }
 .board-row:first-child { min-height: 20px; }
 .tile {
   position: relative;
-  overflow: hidden;
   display: grid;
   place-items: center;
   width: 100%;
@@ -131,7 +130,7 @@ h1 span { color: var(--accent); }
 .target .tile { background: #122730; }
 .target .tile[aria-disabled="false"] { cursor: crosshair; }
 .target .tile[aria-disabled="false"]:hover { border-color: var(--accent); background: #214640; }
-.tile:focus-visible { z-index: 1; outline-offset: 0; }
+.tile:focus-visible { z-index: 3; outline-offset: 0; }
 .tile[data-state="ship"], .swatch.ship { background: var(--ship); color: var(--text); border-color: #59afa2; }
 .tile[data-state="miss"], .swatch.miss { background: #0b1a20; color: #9cbac6; }
 .tile[data-state="hit"], .swatch.hit { background: #623b32; color: var(--hit); border-color: #b67763; }
@@ -140,25 +139,27 @@ h1 span { color: var(--accent); }
   color: var(--sunk);
   border-color: #b26675;
 }
-.tile.latest { box-shadow: inset 0 0 0 1px currentColor; isolation: isolate; }
+.tile.latest { box-shadow: inset 0 0 0 1px currentColor; }
+.tile[data-effect] { isolation: isolate; }
+.tile[data-effect]:not(:focus-visible) { z-index: 2; }
 
-.tile.latest:is([data-state="hit"], [data-state="sunk"], [data-state="miss"])::before,
-.tile.latest:is([data-state="hit"], [data-state="sunk"], [data-state="miss"])::after {
+.tile[data-effect]::before,
+.tile[data-effect]::after {
   content: "";
   position: absolute;
   z-index: -1;
   pointer-events: none;
   opacity: 0;
 }
-.tile.latest:is([data-state="hit"], [data-state="sunk"])::before {
+.tile[data-effect="blast"]::before {
   inset: 0;
-  background: radial-gradient(circle, transparent 0 17%, #fff3b7 24%, #ffc357 34%, #ff714f 52%, transparent 68%);
+  background: radial-gradient(circle, transparent 0 15%, #fff3b7 24%, #ffc357 36%, #ff714f 55%, transparent 70%);
   clip-path: polygon(50% 0, 60% 27%, 86% 12%, 77% 39%, 100% 50%, 75% 61%, 88% 88%,
     61% 75%, 50% 100%, 39% 75%, 12% 88%, 25% 61%, 0 50%, 25% 39%, 12% 12%, 39% 25%);
-  animation: explosion 850ms ease-out;
+  animation: explosion 1s ease-out;
 }
-.tile.latest:is([data-state="hit"], [data-state="sunk"])::after {
-  inset: 8%;
+.tile[data-effect="blast"]::after {
+  inset: 0;
   background:
     radial-gradient(circle at 50% 8%, var(--shot-particle, #ffe49a) 0 5%, transparent 7%),
     radial-gradient(circle at 86% 24%, var(--shot-particle, #ff925f) 0 5%, transparent 7%),
@@ -166,56 +167,62 @@ h1 span { color: var(--accent); }
     radial-gradient(circle at 66% 88%, var(--shot-particle, #ff925f) 0 5%, transparent 7%),
     radial-gradient(circle at 21% 82%, var(--shot-particle, #ffe49a) 0 5%, transparent 7%),
     radial-gradient(circle at 9% 36%, var(--shot-particle, #ff925f) 0 5%, transparent 7%);
-  animation: shot-particles 750ms ease-out;
+  animation: shot-particles 950ms ease-out;
 }
-.tile.latest[data-state="miss"]::before {
-  inset: 18%;
+.tile[data-effect="splash"]::before {
+  inset: 11%;
   border: 2px solid #a9eaff;
+  outline: 1px solid #7bddff;
+  outline-offset: 4px;
   border-radius: 50%;
-  box-shadow: 0 0 5px #7bddff, inset 0 0 5px #7bddff;
-  animation: splash-ring 850ms ease-out;
+  box-shadow: 0 0 8px #7bddff, inset 0 0 5px #7bddff;
+  animation: splash-ring 1.1s ease-out;
 }
-.tile.latest[data-state="miss"]::after {
-  inset: 15%;
+.tile[data-effect="splash"]::after {
+  inset: 4%;
   background:
     radial-gradient(circle at 27% 15%, var(--shot-particle, #d1f3ff) 0 5%, transparent 7%),
     radial-gradient(circle at 71% 9%, var(--shot-particle, #9cdeff) 0 5%, transparent 7%),
     radial-gradient(circle at 88% 43%, var(--shot-particle, #d1f3ff) 0 4%, transparent 6%),
     radial-gradient(circle at 50% 82%, var(--shot-particle, #9cdeff) 0 4%, transparent 7%),
     radial-gradient(circle at 13% 61%, var(--shot-particle, #9cdeff) 0 5%, transparent 7%);
-  animation: shot-particles 750ms ease-out;
+  animation: shot-particles 950ms ease-out;
 }
 
 @media (forced-colors: active) {
-  .tile.latest:is([data-state="hit"], [data-state="sunk"])::before {
+  .tile[data-effect="blast"]::before {
     forced-color-adjust: none;
     background: radial-gradient(circle, transparent 0 22%, CanvasText 27% 52%, transparent 68%);
   }
-  .tile.latest[data-state="miss"]::before {
+  .tile[data-effect="splash"]::before {
     forced-color-adjust: none;
     border-color: CanvasText;
+    outline-color: CanvasText;
     box-shadow: none;
   }
-  .tile.latest:is([data-state="hit"], [data-state="sunk"], [data-state="miss"])::after {
+  .tile[data-effect]::after {
     forced-color-adjust: none;
     --shot-particle: CanvasText;
   }
 }
 
 @keyframes explosion {
-  0% { opacity: 0.95; transform: scale(0.35); }
-  25% { opacity: 1; transform: scale(0.85); }
-  100% { opacity: 0; transform: scale(1.45); }
+  0% { opacity: 0.95; transform: scale(0.45) rotate(-8deg); }
+  24% { opacity: 1; transform: scale(1.55) rotate(5deg); }
+  55% { opacity: 0.72; transform: scale(2.15) rotate(10deg); }
+  100% { opacity: 0; transform: scale(2.85) rotate(15deg); }
 }
 @keyframes splash-ring {
   0% { opacity: 1; transform: scale(0.25); }
-  100% { opacity: 0; transform: scale(1.45); }
+  48% { opacity: 0.83; transform: scale(1.95); }
+  100% { opacity: 0; transform: scale(3); }
 }
 @keyframes shot-particles {
   0% { opacity: 1; transform: scale(0.25); }
-  40% { opacity: 0.9; }
-  100% { opacity: 0; transform: scale(1.2); }
+  40% { opacity: 0.9; transform: scale(1.9) rotate(12deg); }
+  100% { opacity: 0; transform: scale(3.2) rotate(25deg); }
 }
+
 .fleet {
   display: flex;
   justify-content: space-between;

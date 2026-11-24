@@ -23,6 +23,11 @@ let lastAiShot = null;
 
 function makeBoard(id, interactive) {
   const board = byId(id);
+  board.addEventListener('animationend', (event) => {
+    if (event.pseudoElement === '::before' && (event.animationName === 'explosion' || event.animationName === 'splash-ring')) {
+      delete event.target.dataset.effect;
+    }
+  });
   const cells = [];
   for (let r = -1; r < SIZE; r += 1) {
     const line = document.createElement('div');
@@ -133,6 +138,8 @@ function render(message) {
 }
 
 function record(actor, shot) {
+  const target = (actor === 'You' ? enemyCells : ownCells)[shot.index];
+  target.dataset.effect = shot.outcome === 'miss' ? 'splash' : 'blast';
   const square = coordinate(shot.index);
   const desc = shot.outcome === 'sunk' ? `sunk the ${shot.ship}` : shot.outcome;
   const item = document.createElement('li');
@@ -177,6 +184,7 @@ restart.addEventListener('click', () => {
   battle = new Battle();
   activeCell = 0;
   lastPlayerShot = lastAiShot = null;
+  document.querySelectorAll('.tile[data-effect]').forEach((cell) => { delete cell.dataset.effect; });
   log.replaceChildren();
   byId('empty-log').hidden = false;
   render('Shuffle your fleet or start with this formation.');
