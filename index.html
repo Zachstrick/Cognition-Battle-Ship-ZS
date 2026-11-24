@@ -7,8 +7,8 @@
     <meta name="description" content="Play classic Battleship against a tactical computer opponent. No account required.">
     <title>Battleship — Fleet Command</title>
     <link rel="icon" href="./mark.svg?v=5" type="image/svg+xml">
-    <link rel="stylesheet" href="./style.css?v=8">
-    <script type="module" src="./app.mjs?v=5"></script>
+    <link rel="stylesheet" href="./style.css?v=9">
+    <script type="module" src="./app.mjs?v=6"></script>
   </head>
   <body>
     <header class="masthead frame">
@@ -19,7 +19,25 @@
       <span class="mode"><span></span> Single player · vs AI</span>
     </header>
 
-    <main class="frame">
+    <main id="access" class="frame access">
+      <section class="panel access-panel" aria-labelledby="access-title">
+        <p class="eyebrow">Fleet Command</p>
+        <h1 id="access-title">Fleet access</h1>
+        <p class="lede">Enter the access code to play Battleship.</p>
+        <form id="access-form" class="access-form">
+          <div>
+            <label for="access-code">Access code</label>
+            <input id="access-code" type="text" required autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="access-error">
+            <p id="access-error" class="access-error" aria-live="polite"></p>
+          </div>
+          <div class="controls">
+            <button type="submit" class="primary">Enter game</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <main id="battle" class="frame game" hidden>
       <div class="hero">
         <p class="eyebrow">The classic naval strategy game</p>
         <h1>Battleship</h1>
