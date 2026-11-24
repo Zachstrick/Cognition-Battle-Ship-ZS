@@ -187,7 +187,7 @@ function fire(index) {
     } else {
       render(`${reply} Your turn.`);
     }
-  }, 400);
+  }, 1250);
 }
 
 shuffle.addEventListener('click', () => {
