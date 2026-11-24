@@ -130,7 +130,7 @@ h1 span { color: var(--accent); }
 .target .tile[aria-disabled="false"] { cursor: crosshair; }
 .target .tile[aria-disabled="false"]:hover { border-color: var(--accent); background: #214640; }
 .tile:focus-visible { position: relative; z-index: 1; outline-offset: 0; }
-.tile[data-state="ship"], .swatch.ship { background: var(--ship); border-color: #59afa2; }
+.tile[data-state="ship"], .swatch.ship { background: var(--ship); color: var(--text); border-color: #59afa2; }
 .tile[data-state="miss"], .swatch.miss { background: #0b1a20; color: #9cbac6; }
 .tile[data-state="hit"], .swatch.hit { background: #623b32; color: var(--hit); border-color: #b67763; }
 .tile[data-state="sunk"], .swatch.sunk {

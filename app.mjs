@@ -9,10 +9,10 @@ const restart = byId('restart');
 const log = byId('log');
 const labels = {
   water: ['Unfired', ''],
-  ship: ['Ship', ''],
+  ship: ['Ship', '■'],
   miss: ['Miss', '•'],
   hit: ['Hit', '×'],
-  sunk: ['Sunk', '×'],
+  sunk: ['Sunk', '⊗'],
 };
 
 let battle = new Battle();
