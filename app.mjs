@@ -55,7 +55,7 @@ function makeBoard(id, select, preview) {
         cell.className = 'tile';
         cell.type = 'button';
         const index = r * SIZE + c;
-        cell.addEventListener('click', () => select(index));
+        cell.addEventListener('click', (event) => select(index, event.detail === 0));
         cell.addEventListener('focus', () => {
           cells[grid.activeIndex].tabIndex = -1;
           grid.activeIndex = index;
@@ -70,7 +70,10 @@ function makeBoard(id, select, preview) {
     }
     board.append(line);
   }
-  if (preview) board.addEventListener('pointerleave', () => preview(null));
+  if (preview) board.addEventListener('pointerleave', () => {
+    const index = grid.activeIndex;
+    preview(document.activeElement === cells[index] ? index : null);
+  });
   board.addEventListener('keydown', (event) => {
     const index = grid.activeIndex;
     const r = Math.floor(index / SIZE);
@@ -234,8 +237,14 @@ function finishPlacement() {
   start.focus();
 }
 
-function placeAt(index) {
+function placeAt(index, nonPointer) {
   if (!battle.nextShip) return;
+  if (nonPointer && previewIndex !== index
+      && battle.placementAt(index, vertical) && battle.placementAt(previewIndex, vertical)) {
+    previewPlacement(index);
+    status.textContent = `Preview moved to ${coordinate(index)}. Select it again to place.`;
+    return;
+  }
   if (!battle.placeShip(index, vertical)) {
     status.textContent = 'That ship won’t fit. Try another square or rotate.';
     return;
