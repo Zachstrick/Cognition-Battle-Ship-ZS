@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#09151b">
+    <meta name="description" content="Play classic Battleship against a tactical computer opponent. No account required.">
+    <title>Battleship — Fleet Command</title>
+    <link rel="icon" href="./mark.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./style.css">
+    <script type="module" src="./app.mjs"></script>
+  </head>
+  <body>
+    <header class="masthead frame">
+      <a class="brand" href="./" aria-label="Fleet Command home">
+        <img src="./mark.svg" alt="" width="34" height="34">
+        <span>Fleet Command</span>
+      </a>
+      <span class="mode"><span></span> Single player · vs AI</span>
+    </header>
+
+    <main class="frame">
+      <div class="hero">
+        <p class="eyebrow">The classic naval strategy game</p>
+        <h1>Battleship<span>.</span></h1>
+        <p class="lede">Find the enemy fleet before the enemy finds yours.</p>
+      </div>
+
+      <section class="command panel" aria-label="Battle controls">
+        <div>
+          <p id="phase" class="eyebrow phase">Fleet setup</p>
+          <p id="status" class="status" aria-live="polite">Shuffle your fleet or start with this formation.</p>
+        </div>
+        <div class="controls">
+          <button id="shuffle" type="button" class="secondary">Shuffle fleet</button>
+          <button id="start" type="button" class="primary">Start battle <span aria-hidden="true">→</span></button>
+          <button id="restart" type="button" class="secondary" hidden>New game</button>
+        </div>
+      </section>
+
+      <div class="theater">
+        <section class="sector panel own" aria-labelledby="own-title">
+          <div class="sector-head">
+            <div>
+              <p class="eyebrow">01 / Defense</p>
+              <h2 id="own-title">Your waters</h2>
+            </div>
+            <span id="own-count" class="counter"></span>
+          </div>
+          <div id="own-grid" class="board" role="table" aria-label="Your fleet board"></div>
+          <ul id="own-fleet" class="fleet" aria-label="Your ships"></ul>
+        </section>
+
+        <section class="sector panel enemy" aria-labelledby="enemy-title">
+          <div class="sector-head">
+            <div>
+              <p class="eyebrow">02 / Offense</p>
+              <h2 id="enemy-title">Enemy waters</h2>
+            </div>
+            <span id="enemy-count" class="counter"></span>
+          </div>
+          <div id="enemy-grid" class="board target" role="grid" aria-label="Targeting grid" aria-describedby="instructions"></div>
+          <ul id="enemy-fleet" class="fleet" aria-label="Enemy ships"></ul>
+        </section>
+      </div>
+
+      <div class="briefing">
+        <section class="panel brief" aria-labelledby="log-title">
+          <h2 id="log-title">Battle log</h2>
+          <p id="empty-log">No shots fired yet.</p>
+          <ol id="log" class="log" aria-label="Latest shots"></ol>
+        </section>
+        <section class="panel brief" aria-labelledby="how-title">
+          <h2 id="how-title">How to play</h2>
+          <p id="instructions">Pick a square in enemy waters to fire. You and the AI take one shot per turn. Sink all five enemy ships to win. With a keyboard, use arrow keys to aim and Enter or Space to fire.</p>
+          <ul class="legend" aria-label="Board symbols">
+            <li><span class="swatch ship" aria-hidden="true"></span>Ship</li>
+            <li><span class="swatch miss" aria-hidden="true">•</span>Miss</li>
+            <li><span class="swatch hit" aria-hidden="true">×</span>Hit</li>
+            <li><span class="swatch sunk" aria-hidden="true">×</span>Sunk</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+    <footer class="frame footer">Fleet Command <span>•</span> Battleship</footer>
+    <noscript><p class="frame">Enable JavaScript to play Battleship.</p></noscript>
+  </body>
+</html>
